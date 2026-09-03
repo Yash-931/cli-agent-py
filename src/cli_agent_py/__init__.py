@@ -1,23 +1,17 @@
-from google import genai
-from dotenv import load_dotenv
-import os
-import asyncio
-
-load_dotenv()
-
+from .ai import generateResponse
 
 async def main():
-    client = genai.Client(
-        vertexai=True,
-        project=os.getenv("GCP_PROJECT"),
-        location="us-central1",
-    )
+    conversation = []
+    print("Agent is running...")
+    while True:
+        user_input = input("You: ")
 
-    response = await client.aio.models.generate_content(
-        contents=["Hi, gemini are you up?"], model="gemini-2.5-flash"
-    )
+        if user_input == "/exit":
+            break
 
-    print(response.text)
+        user_conversation = {"role": "user", "content": user_input}
+        conversation.append(user_conversation)
 
-if __name__ == "__main__":
-    asyncio.run(main())
+        await generateResponse(conversation)
+
+        

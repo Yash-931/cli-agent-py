@@ -1,5 +1,5 @@
 from .calculator import calculator
 
-tool_registry = [
-    calculator,
-]
+tool_registry = {
+    "Calculator": calculator
+}

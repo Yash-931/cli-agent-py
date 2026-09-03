@@ -1,26 +1,30 @@
 from dotenv import load_dotenv
 from google import genai
 import os
-import asyncio
 from .tools import tool_registry
+from .tools.calculator import ToolDeclaration
 from google.genai import types
 
 load_dotenv()
 
-for name, tool in tool_registry.items():
-    tool_name = name
-    tool_declaration = tool["declaration"]
+func_delarations = []
 
-    types.FunctionDeclaration(
-        name=tool_declaration["name"],
-        description=tool_declaration["description"],
+for name, tool in tool_registry.items():
+    tool_declaration: ToolDeclaration = tool.declaration
+
+    func = types.FunctionDeclaration(
+        name=tool_declaration.name,
+        description=tool_declaration.description,
         parameters_json_schema={
-            "type": "object",
-            "properties": tool_declaration["parameters"],
-            "required": tool_declaration["required"],
-        },
+            'type': 'object',
+            'properties': tool_declaration.parameters,
+            'required': tool_declaration.required
+        }
     )
 
+    func_delarations.append(func)
+
+tools = types.Tool(function_declarations=func_delarations)
 
 async def generateResponse(conversation):
     client = genai.Client(
@@ -35,10 +39,3 @@ async def generateResponse(conversation):
 
     print(response.text)
 
-
-async def main():
-    await generateResponse()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

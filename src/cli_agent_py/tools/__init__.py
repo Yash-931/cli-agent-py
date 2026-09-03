@@ -1,5 +1,5 @@
-from .calculator import calculator
+from .calculator import calculator, ToolSpec
 
-tool_registry = {
-    "Calculator": calculator
+tool_registry: dict[str, ToolSpec] = {
+    "calculator": calculator
 }

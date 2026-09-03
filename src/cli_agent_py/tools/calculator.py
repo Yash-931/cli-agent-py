@@ -1,4 +1,25 @@
-def execute_calculator(a, b, op):
+from pydantic import BaseModel
+from typing import Literal, Callable
+
+
+class ParamSpec(BaseModel):
+    type: Literal["string", "number", "boolean"]
+    description: str
+
+
+class ToolDeclaration(BaseModel):
+    name: str
+    description: str
+    required: list[str]
+    parameters: dict[str, ParamSpec]
+
+
+class ToolSpec(BaseModel):
+    declaration: ToolDeclaration
+    execute: Callable[..., float]
+
+
+def execute_calculator(a: float, b: float, op: str):
     if op == "add":
         return a + b
 
@@ -10,26 +31,24 @@ def execute_calculator(a, b, op):
 
     else:
         if b == 0:
-            raise Exception("Divsion by zero not possible")
+            raise ValueError("Divsion by zero not possible")
 
         else:
             return a / b
 
 
-calculator = {
-    "declaration": {
-        "name": "Calculator",
-        "description": "Calculate a basic mathematical expression. Supports addition, multiplication, division, subtraction of two numbers. Can use this tool multiple times breaking a complex mathematical expression and solving it in parts",
-        "parameters": {
-            "a": {
-                "type": "Number",
-                "description": "The first number",
-            },
-            "b": {"type": "Number", "description": "The second number"},
-            "op": {"type": "String", "description": "The operation to be performed"},
+calculator = ToolSpec(
+    declaration=ToolDeclaration(
+        name="calculator",
+        description="Calculate a basic mathematical expression. Supports addition, multiplication, division, subtraction of two numbers. Can use this tool multiple times breaking a complex mathematical expression and solving it in parts",
+        parameters={
+            "a": ParamSpec(type="number", description="The first number"),
+            "b": ParamSpec(type="number", description="The second number"),
+            "op": ParamSpec(
+                type="string", description="The operation needed to be performed"
+            ),
         },
-        "required": ["a", "b", "op"]
-    },
-
-    "execute": execute_calculator
-}
+        required=["a", "b", "op"],
+    ),
+    execute=execute_calculator,
+)

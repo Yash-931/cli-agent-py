@@ -4,6 +4,7 @@ import os
 from .tools import tool_registry
 from .tools.calculator import ToolDeclaration
 from google.genai import types
+import asyncio
 
 load_dotenv()
 
@@ -26,7 +27,7 @@ for name, tool in tool_registry.items():
 
 tools = types.Tool(function_declarations=func_delarations)
 
-async def generateResponse(conversation):
+async def generateResponse(conversation: list[types.Content]):
     client = genai.Client(
         vertexai=True,
         project=os.getenv("GCP_PROJECT"),
@@ -34,8 +35,15 @@ async def generateResponse(conversation):
     )
 
     response = await client.aio.models.generate_content(
-        contents=conversation, model="gemini-2.5-flash"
+        contents=conversation, model="gemini-2.5-flash", config=types.GenerateContentConfig(tools=[tools])
     )
 
+    model_conversation = types.Content(
+        role='model',
+        parts=response.parts
+    )
+    
+    conversation.append(model_conversation)
     print(response.text)
+
 

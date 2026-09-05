@@ -29,12 +29,14 @@ def execute_calculator(a: float, b: float, op: str):
     elif op == "multiply":
         return a * b
 
-    else:
+    elif op == "divide":
         if b == 0:
             raise ValueError("Divsion by zero not possible")
 
         else:
             return a / b
+    else:
+        raise TypeError("Incorrect operator passsed")
 
 
 calculator = ToolSpec(

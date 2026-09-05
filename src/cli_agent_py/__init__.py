@@ -21,9 +21,9 @@ async def main():
         conversation.append(user_conversation)
 
 
-        print("Agent: ")
+        print("Agent: ", end="")
         await generateResponse(conversation)
 
 
-if __name__ == "__main__":
+def run():
     asyncio.run(main())

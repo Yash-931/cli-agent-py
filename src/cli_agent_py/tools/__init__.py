@@ -1,5 +1,4 @@
-from .calculator import calculator, ToolSpec
+from .calculator import calculator
+from .models import ToolSpec
 
-tool_registry: dict[str, ToolSpec] = {
-    "calculator": calculator
-}
+tool_registry: dict[str, ToolSpec] = {"calculator": calculator}

@@ -1,22 +1,12 @@
 from pydantic import BaseModel
-from typing import Literal, Callable
+from typing import Literal
+from .models import ToolDeclaration, ToolSpec, ParamSpec
 
 
-class ParamSpec(BaseModel):
-    type: Literal["string", "number", "boolean"]
-    description: str
-
-
-class ToolDeclaration(BaseModel):
-    name: str
-    description: str
-    required: list[str]
-    parameters: dict[str, ParamSpec]
-
-
-class ToolSpec(BaseModel):
-    declaration: ToolDeclaration
-    execute: Callable[..., float]
+class CalculatorArgs(BaseModel):
+    a: float
+    b: float
+    op: Literal["add", "subtract", "divide", "multiply"]
 
 
 def execute_calculator(a: float, b: float, op: str):
@@ -53,4 +43,5 @@ calculator = ToolSpec(
         required=["a", "b", "op"],
     ),
     execute=execute_calculator,
+    args_model=CalculatorArgs,
 )

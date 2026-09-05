@@ -60,12 +60,12 @@ async def generateResponse(conversation: list[types.Content]):
                     and tool_name in tool_registry
                 ):
                     try:
-                        print("Tool called ", tool_name)
-                        result = tool_registry[tool_name].execute(**tool_args)
+                        spec = tool_registry[tool_name]
+                        validated_args = spec.args_model.model_validate(tool_args)
+                        result = spec.execute(**validated_args.model_dump())
 
                     except Exception as e:
                         error = str(e)
-
 
                 else:
                     error = (
@@ -87,12 +87,11 @@ async def generateResponse(conversation: list[types.Content]):
                 conversation.append(tool_response)
 
         else:
-            print(response.text)
+            print((response.text or "").strip())
             return
 
         n = n - 1
 
     print(
         "Sorry the max limit of tool calls reached. Please try again later with simpler instructions",
-        end="",
     )
